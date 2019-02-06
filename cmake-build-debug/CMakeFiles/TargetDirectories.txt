@@ -1,0 +1,3 @@
+/mnt/content/dev/media/player/v2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/content/dev/media/player/v2/cmake-build-debug/CMakeFiles/v2.dir
+/mnt/content/dev/media/player/v2/cmake-build-debug/CMakeFiles/edit_cache.dir

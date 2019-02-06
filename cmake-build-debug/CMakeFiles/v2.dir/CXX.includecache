@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/content/dev/media/player/v2/main.cpp
+iostream
+-
+libavcodec/avcodec.h
+-
+libavformat/avformat.h
+-
+libavutil/avutil.h
+-
+libswresample/swresample.h
+-
+SDL2/SDL.h
+-
+
