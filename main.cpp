@@ -10,7 +10,6 @@ extern "C"{
 #define INPUT_FILE "sample.mp3"
 #define MAX_AUDIO_FRAME_SIZE 192000
 
-#define OUTPUT_PCM 1
 #define USE_SDL 1
 
 using namespace std;
@@ -21,7 +20,6 @@ static Uint8 *audio_pos;
 
 void fill_audio(void *udata, Uint8 *stream, int len)
 {
-    //SDL 2.0
     SDL_memset(stream, 0, len);
     if (audio_len == 0)
         return;
@@ -44,7 +42,6 @@ int main() {
     AVFrame *pFrame;
     SDL_AudioSpec wanted_spec;
     int ret;
-    uint32_t len = 0;
     int got_picture;
     int index = 0;
     int64_t in_channel_layout;
@@ -64,7 +61,8 @@ int main() {
         return -1;
     }
 
-//    av_dump_format(pFormatCtx, 0, INPUT_FILE, false);
+//    display audio meta information
+    av_dump_format(pFormatCtx, 0, INPUT_FILE, false);
 
     audioStream = -1;
 
@@ -110,10 +108,6 @@ int main() {
     out_buffer = (uint8_t *)av_malloc(MAX_AUDIO_FRAME_SIZE * 2);
     pFrame = av_frame_alloc();
 
-    cout << "out channels:" << out_channels << "out nb samples:"
-    << out_nb_samples << "out sample fmt: " << out_sample_fmt << endl;
-
-
 #if USE_SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
         cout << "Couldn't initialize SDL " << SDL_GetError() << endl;
@@ -122,9 +116,9 @@ int main() {
 
     wanted_spec.freq = out_sample_rate;
     wanted_spec.format = AUDIO_S16SYS;
-    wanted_spec.channels = out_channels;
+    wanted_spec.channels = static_cast<Uint8>(out_channels);
     wanted_spec.silence = 0;
-    wanted_spec.samples = out_nb_samples;
+    wanted_spec.samples = static_cast<Uint16>(out_nb_samples);
     wanted_spec.callback = fill_audio;
     wanted_spec.userdata = pCodecCtx;
 
@@ -159,21 +153,18 @@ int main() {
                         MAX_AUDIO_FRAME_SIZE,
                         (const uint8_t **)pFrame->data,
                         pFrame->nb_samples);
-//                cout << "Index: " << index << " Pts: " << packet->pts << " Packet size : " << packet->size << endl;
-//                return -1;
+                cout << "Index: " << index << " Pts: " << packet->pts << " Packet size : " << packet->size << endl;
 
                 index++;
             }
 
 #if USE_SDL
-            cout << "audio_len" << out_buffer_size << endl;
-
             while (audio_len > 0) {
                 SDL_Delay(1);
             }
 
-            audio_chunk = (Uint8 *) out_buffer;
-            audio_len = out_buffer_size;
+            audio_chunk = out_buffer;
+            audio_len = static_cast<Uint32>(out_buffer_size);
             audio_pos = audio_chunk;
 #endif
         }
